@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="眼篩拍照">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAD3UlEQVR4nO3cW3abSBiFUadXvyZDtceSqWYEedBabrfsg7Coy1+w93MsFcUnINx+/Hx9fYGv/DN7ANQlDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIj+nT2AQf78/t32A3+9vbX9wIJ+/Hx9nT2GNpqv/iPOkc6ScZTqYL/lilkjjkVr2Fa/laJxnLKGbQVbqRXHBZv4rE4l8+MQxIa5ocyMQxY7zUpkQhzjm0iTu1ydgysZGkenlfHclDUczOD4hiUy4gxp2zmqc7z20OehNpmK9w/pPRXdtxwHp6PT8tc5m15zfm46xvH0Yvf+QZTd2lebsS67lScWstrO4m48Yw5dP37pt77x9o+bz2H7Lce3lmp8Ew+HtzGkI3/7tInz2TiOnUsycTuxPcKHAzv450eMn9uWcewZ/dzdR5NVO7GPh9/edgzN7gTbs8mtdmCxoj3T2OoIqU0cD39M9bPYP8IKy/JwSpv00SCOuZvZK+vdx9E4FipjzH9HB1+v6dpHx7vPS5VxYv3muVccyhip02wfiiNttVYsY/8WuOaF/h5Xhj3URCSO/+z5kdXcbHQijv/ZXveXKuPlOo9D7vflFc6rZXFz9NrKQsekw1bwlGXvsSJ67Vau+VObpdNsdzzm0McY/eb5aBwDLv+0MmZrP3if0vXyRYMtx0J9nEzvC1ttdisP+5BIWw+ntMkGrNkxx547UCRy3J5pbLVrcw9pSye7h7TxSbBfb2/fOgld8HRINee5+/ym+HMrZR9q+qjCHHY5fX4b5ROP5Xz88wuq9sSbZ2Xb8Kzsk2o+ZT/gFQxdv/Rb3/ucEVdl35eh7QsIPn9+NUsc3GzwZp+VnPnNPneWWzezXOidYHcksuG6bxP8TCgvs4P4qFYc7y5YSZ0m3hWN484pWylYw5014rizaCv1a7izZBxfKlXMch186TxxbKtzvnwhV4mDJ3jijUgcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIPoLO8ylIWGVSgMAAAAASUVORK5CYII=">
+<title>社區眼部篩檢拍照工具</title>
+<style>
+  :root{
+    --primary:#0d6e6e;
+    --primary-dark:#09504f;
+    --accent:#e07a2c;
+    --bg:#f4f8f8;
+    --card:#ffffff;
+    --danger:#c0392b;
+    --text:#1c2b2b;
+    --line:#d7e4e4;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .app-shell{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;}
+  .warning-banner{
+    background:#fff3cd;color:#8a6116;padding:10px 14px;font-size:14px;text-align:center;
+    border-bottom:1px solid #f0d38a;
+  }
+  .screen{display:none;padding:16px;flex:1;flex-direction:column;}
+  .screen.active{display:flex;}
+  h1{font-size:20px;margin:4px 0 16px;color:var(--primary-dark);text-align:center;}
+  h2{font-size:16px;margin:0;color:var(--primary-dark);}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:14px;margin-bottom:6px;font-weight:600;color:var(--primary-dark);}
+  input[type="text"], input[type="number"]{
+    width:100%;padding:12px;font-size:18px;border:2px solid var(--line);border-radius:10px;
+  }
+  .btn-group{display:flex;gap:8px;}
+  .gender-btn, .camera-btn{
+    flex:1;padding:14px;font-size:16px;border:2px solid var(--line);background:var(--card);
+    border-radius:10px;font-weight:600;color:var(--text);
+  }
+  .gender-btn.active, .camera-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  .primary-btn{
+    background:var(--primary);color:#fff;border:none;border-radius:12px;
+    padding:16px;font-size:18px;font-weight:700;width:100%;margin-top:8px;
+  }
+  .primary-btn.big{padding:20px;font-size:20px;}
+  .primary-btn:disabled{background:#9db8b8;}
+  .secondary-btn{
+    background:#fff;color:var(--primary-dark);border:2px solid var(--primary);border-radius:10px;
+    padding:10px;font-size:14px;font-weight:600;
+  }
+  .secondary-btn.small{padding:6px 10px;font-size:12px;}
+  .hint{font-size:13px;color:#5b7373;text-align:center;margin-top:10px;line-height:1.5;}
+  /* camera screen */
+  .video-wrap{
+    position:relative;width:100%;aspect-ratio:3/4;background:#000;border-radius:14px;overflow:hidden;
+  }
+  video{width:100%;height:100%;object-fit:cover;display:block;}
+  svg.guide{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+  .guide-face{fill:none;stroke:#fff;stroke-opacity:.85;stroke-width:0.6;stroke-dasharray:2,2;}
+  .guide-line{stroke:#ffd166;stroke-opacity:.9;stroke-width:0.5;stroke-dasharray:1.5,1.5;}
+  .guide-pupil{fill:none;stroke:#38d9a9;stroke-width:0.8;transition:stroke .15s;}
+  .guide-pupil.ok{stroke:#2ecc71;stroke-width:1.4;}
+  .guide-pupil.bad{stroke:#ff9f43;stroke-width:0.8;}
+  .guide-eye-zoom{fill:none;stroke:#38d9a9;stroke-width:1;transition:stroke .15s;}
+  .guide-eye-zoom.ok{stroke:#2ecc71;stroke-width:1.6;}
+  .guide-eye-zoom.bad{stroke:#ff9f43;stroke-width:1;}
+  .guide-label{fill:#38d9a9;font-size:7px;font-weight:700;text-anchor:middle;}
+  .step-caption{
+    position:absolute;top:8px;left:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;
+    padding:8px 10px;border-radius:8px;font-size:14px;text-align:center;font-weight:600;
+  }
+  .detect-status{
+    position:absolute;top:44px;left:8px;right:8px;text-align:center;font-size:12.5px;font-weight:700;
+    padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.45);color:#fff;
+  }
+  .detect-status.ok{color:#2ecc71;}
+  .detect-status.bad{color:#ffb86b;}
+  .detect-status.neutral{color:#dfe9e9;}
+  .countdown{
+    position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;
+    font-size:40px;font-weight:800;text-shadow:0 2px 6px rgba(0,0,0,.6);
+  }
+  .patient-info-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    background:var(--card);border-radius:10px;padding:8px 10px;margin-top:10px;font-size:14px;
+  }
+  .stepper{display:flex;align-items:center;gap:6px;}
+  .stepper button{width:30px;height:30px;border-radius:8px;border:2px solid var(--primary);background:#fff;color:var(--primary-dark);font-size:16px;font-weight:700;}
+  .stepper span{min-width:34px;text-align:center;font-weight:700;}
+  .gender-toggle{display:flex;gap:4px;}
+  .gender-toggle button{padding:6px 10px;font-size:13px;border-radius:8px;border:2px solid var(--line);background:#fff;font-weight:700;}
+  .gender-toggle button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .controls .primary-btn{flex:1 1 100%;}
+  .controls .secondary-btn{flex:1;}
+  .thumbs{display:flex;gap:6px;margin-top:10px;overflow-x:auto;}
+  .thumbs img{height:64px;border-radius:6px;border:2px solid var(--line);}
+  .log-panel{padding:12px 16px 24px;}
+  .log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px;flex-wrap:wrap;}
+  table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:10px;overflow:hidden;}
+  th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:center;}
+  th{background:#e9f3f3;color:var(--primary-dark);}
+  td img{height:34px;border-radius:4px;}
+  .badge{display:inline-block;padding:2px 6px;border-radius:6px;font-size:11px;font-weight:700;}
+  .badge.ok{background:#d6f5e8;color:#117a52;}
+  .footer-note{font-size:11px;color:#88a0a0;text-align:center;padding:6px 16px 20px;}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <div id="insecureWarning" class="warning-banner" style="display:none">
+    ⚠️ 目前非安全連線（非 https），部分瀏覽器（尤其 iPhone Safari）可能無法啟動相機。請改用 https 連結開啟本工具。
+  </div>
+
+  <!-- 設定畫面 -->
+  <div id="screen-setup" class="screen active">
+    <h1>社區眼部篩檢拍照工具</h1>
+
+    <div class="field">
+      <label>篩檢流水號</label>
+      <input type="text" id="inputSerial" inputmode="numeric" placeholder="例如 1" value="1">
+    </div>
+
+    <div class="field">
+      <label>性別</label>
+      <div class="btn-group" id="genderGroupSetup">
+        <button data-gender="M" class="gender-btn active">男</button>
+        <button data-gender="F" class="gender-btn">女</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><input type="checkbox" id="chkCloseup" checked style="width:18px;height:18px;vertical-align:middle;margin-right:6px;">啟用左右眼近拍（每人共4張：張眼、閉眼、左眼特寫、右眼特寫）</label>
+    </div>
+
+    <div class="field">
+      <label>鏡頭</label>
+      <div class="btn-group" id="cameraGroupSetup">
+        <button data-facing="environment" class="camera-btn active">後置鏡頭（建議）</button>
+        <button data-facing="user" class="camera-btn">前置鏡頭</button>
+      </div>
+    </div>
+
+    <button id="btnStart" class="primary-btn">啟動相機，開始篩檢</button>
+    <p class="hint">操作建議：距離約 30–40 公分，拍攝時將受檢者雙眼對齊畫面中的綠色瞳孔圈，即可確保每位受檢者額頭、眉毛、雙眼比例一致。</p>
+  </div>
+
+  <!-- 拍照畫面 -->
+  <div id="screen-camera" class="screen">
+    <div class="patient-info-bar">
+      <div class="stepper">
+        <button id="btnSerialMinus">－</button>
+        <span id="displaySerial">001</span>
+        <button id="btnSerialPlus">＋</button>
+      </div>
+      <div class="gender-toggle" id="genderToggleCamera">
+        <button data-gender="M" class="active">男</button>
+        <button data-gender="F">女</button>
+      </div>
+      <div id="infoTimer">00.0s</div>
+    </div>
+
+    <div class="video-wrap">
+      <video id="video" autoplay playsinline muted></video>
+      <svg class="guide" id="guideOverlay" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <ellipse class="guide-face" id="gFace" cx="50" cy="46" rx="27" ry="34"></ellipse>
+        <line class="guide-line" id="gBrow" x1="20" y1="32" x2="80" y2="32"></line>
+        <ellipse class="guide-pupil" id="gPupilL" cx="36" cy="43" rx="8" ry="2.7"></ellipse>
+        <ellipse class="guide-pupil" id="gPupilR" cx="64" cy="43" rx="8" ry="2.7"></ellipse>
+        <line class="guide-line" id="gChin" x1="30" y1="76" x2="70" y2="76"></line>
+        <ellipse class="guide-eye-zoom" id="gZoom" cx="50" cy="46" rx="20" ry="15" style="display:none"></ellipse>
+        <text class="guide-label" id="gZoomLabel" x="50" y="46" style="display:none">L</text>
+      </svg>
+      <div class="step-caption" id="stepCaption">距離約30–40公分，將雙眼對齊綠色圓圈，按「開始拍照」</div>
+      <div class="detect-status neutral" id="detectStatus">偵測模型載入中…（即使沒載入，仍可用手動對位圈拍照）</div>
+      <div class="countdown" id="countdownNum"></div>
+    </div>
+
+    <div class="controls">
+      <button id="btnCapture" class="primary-btn big">開始拍照</button>
+      <button id="btnRetake" class="secondary-btn" style="display:none">重拍這一位</button>
+      <button id="btnSwitchCam" class="secondary-btn">切換鏡頭</button>
+      <button id="btnEndSession" class="secondary-btn">結束，返回設定</button>
+    </div>
+
+    <div class="thumbs" id="thumbRow"></div>
+  </div>
+
+  <div class="log-panel" id="logPanel" style="display:none">
+    <div class="log-header">
+      <h2>本場次拍攝紀錄</h2>
+      <div>
+        <button id="btnExportCsv" class="secondary-btn small">匯出紀錄CSV</button>
+        <button id="btnExportZip" class="secondary-btn small">打包照片ZIP</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>流水號</th><th>性別</th><th>時間</th><th>耗時(秒)</th><th>張數</th><th>縮圖</th></tr></thead>
+      <tbody id="logBody"></tbody>
+    </table>
+    <p class="footer-note">Android/電腦：每張照片會自動下載到裝置的下載資料夾。iPhone (Safari)：請改用「打包照片ZIP」匯出。「打包照片ZIP」與「匯出紀錄CSV」每次都會包含<strong>目前為止所有受檢者</strong>的資料，不需每位篩檢完都按一次，只要在整場次結束前按最後一次即可取得所有人的照片。提醒：資料僅暫存於目前分頁中，若中途關閉分頁或重新整理會遺失尚未匯出的資料，建議每篩檢10–20人就先匯出一次備份。檔名格式：日期_流水號_性別_類型.jpg（open=張眼, closed=閉眼, L=左眼特寫, R=右眼特寫）。</p>
+  </div>
+
+</div>
+
+<canvas id="hiddenCanvas" style="display:none"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!--
+  即時眼部偵測（輔助對位，與身份辨識無關）。
+  使用 Google MediaPipe FaceLandmarker，全程在裝置本機運算，不會把影像傳到任何伺服器。
+  因為只需要定位眼睛/虹膜，額頭以下若戴口罩遮住口鼻完全不影響偵測。
+  需要網路下載模型檔（約數MB），建議出發前先在有WiFi環境開啟本工具一次，
+  若當下無網路或載入失敗，會自動停用此功能，仍可用畫面上的手動對位圈拍照，不影響基本功能。
+-->
+<script type="module">
+  import { FaceLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm";
+
+  var landmarker = null;
+  var modelReady = false;
+  var modelFailed = false;
+
+  async function initLandmarker(){
+    try{
+      var vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+      );
+      var opts = {
+        baseOptions: {
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+          delegate: "GPU"
+        },
+        runningMode: "VIDEO",
+        numFaces: 1
+      };
+      try{
+        landmarker = await FaceLandmarker.createFromOptions(vision, opts);
+      }catch(gpuErr){
+        opts.baseOptions.delegate = "CPU";
+        landmarker = await FaceLandmarker.createFromOptions(vision, opts);
+      }
+      modelReady = true;
+    }catch(e){
+      modelFailed = true;
+      console.warn("眼部偵測模型載入失敗，將僅使用手動對位圈：", e);
+    }
+  }
+  initLandmarker();
+
+  function mid(a,b){ return {x:(a.x+b.x)/2, y:(a.y+b.y)/2}; }
+
+  window.__eyeDetector = {
+    isReady: function(){ return modelReady; },
+    isFailed: function(){ return modelFailed; },
+    detect: function(videoEl, nowMs){
+      if(!modelReady || !landmarker || !videoEl || videoEl.videoWidth === 0) return null;
+      var result;
+      try{
+        result = landmarker.detectForVideo(videoEl, nowMs);
+      }catch(e){ return null; }
+      if(!result || !result.faceLandmarks || result.faceLandmarks.length === 0) return null;
+      var lm = result.faceLandmarks[0];
+      var irisA = lm[468], irisB = lm[473];
+      var eyeA, eyeB;
+      if(irisA && irisB){
+        eyeA = irisA; eyeB = irisB;
+      } else if(lm[33] && lm[133] && lm[263] && lm[362]){
+        eyeA = mid(lm[33], lm[133]);
+        eyeB = mid(lm[263], lm[362]);
+      } else {
+        return null;
+      }
+      // 不論mediapipe內部左右定義，依畫面上的x座標重新判斷：
+      // 後置鏡頭未鏡像，畫面左側＝受檢者右眼，畫面右側＝受檢者左眼
+      var imgLeft, imgRight;
+      if(eyeA.x < eyeB.x){ imgLeft = eyeA; imgRight = eyeB; }
+      else { imgLeft = eyeB; imgRight = eyeA; }
+      return { imgLeft: {x:imgLeft.x, y:imgLeft.y}, imgRight: {x:imgRight.x, y:imgRight.y} };
+    }
+  };
+</script>
+<script>
+(function(){
+  "use strict";
+
+  // ---------- 安全連線檢查 ----------
+  if(!window.isSecureContext){
+    document.getElementById('insecureWarning').style.display = 'block';
+  }
+
+  // ---------- 狀態 ----------
+  var state = {
+    serial: 1,
+    gender: 'M',
+    closeupEnabled: true,
+    facing: 'environment',
+    stream: null,
+    steps: [],
+    stepIndex: 0,
+    capturedShots: [], // {key,label,blob,url}
+    patientStartTime: 0,
+    sessionLog: [],   // {serial,gender,time,elapsed,count,shots:[{key,url,filename}]}
+    countdownTimer: null,
+    capturing: false
+  };
+
+  var STEP_DEFS = {
+    open:   {key:'open',   label:'請睜開雙眼，正視鏡頭', countdown:2, guide:'face'},
+    closed: {key:'closed', label:'請閉上雙眼',           countdown:2, guide:'face'},
+    left:   {key:'L',      label:'請靠近，拍攝受檢者「左眼」特寫（畫面右側）', countdown:3, guide:'leftEye'},
+    right:  {key:'R',      label:'請靠近，拍攝受檢者「右眼」特寫（畫面左側）', countdown:3, guide:'rightEye'}
+  };
+
+  function buildSteps(){
+    var steps = [STEP_DEFS.open, STEP_DEFS.closed];
+    if(state.closeupEnabled){
+      steps.push(STEP_DEFS.left, STEP_DEFS.right);
+    }
+    return steps;
+  }
+
+  // ---------- DOM refs ----------
+  var screenSetup = document.getElementById('screen-setup');
+  var screenCamera = document.getElementById('screen-camera');
+  var logPanel = document.getElementById('logPanel');
+  var video = document.getElementById('video');
+  var hiddenCanvas = document.getElementById('hiddenCanvas');
+  var stepCaption = document.getElementById('stepCaption');
+  var countdownNum = document.getElementById('countdownNum');
+  var displaySerial = document.getElementById('displaySerial');
+  var infoTimer = document.getElementById('infoTimer');
+  var thumbRow = document.getElementById('thumbRow');
+  var logBody = document.getElementById('logBody');
+  var gZoom = document.getElementById('gZoom');
+  var gZoomLabel = document.getElementById('gZoomLabel');
+  var gFace = document.getElementById('gFace');
+  var gBrow = document.getElementById('gBrow');
+  var gPupilL = document.getElementById('gPupilL');
+  var gPupilR = document.getElementById('gPupilR');
+  var gChin = document.getElementById('gChin');
+
+  var btnCapture = document.getElementById('btnCapture');
+  var btnRetake = document.getElementById('btnRetake');
+
+  // ---------- 設定畫面互動 ----------
+  document.getElementById('genderGroupSetup').addEventListener('click', function(e){
+    var btn = e.target.closest('.gender-btn');
+    if(!btn) return;
+    this.querySelectorAll('.gender-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    state.gender = btn.dataset.gender;
+  });
+
+  document.getElementById('cameraGroupSetup').addEventListener('click', function(e){
+    var btn = e.target.closest('.camera-btn');
+    if(!btn) return;
+    this.querySelectorAll('.camera-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    state.facing = btn.dataset.facing;
+  });
+
+  document.getElementById('chkCloseup').addEventListener('change', function(e){
+    state.closeupEnabled = e.target.checked;
+  });
+
+  document.getElementById('btnStart').addEventListener('click', function(){
+    var v = parseInt(document.getElementById('inputSerial').value, 10);
+    state.serial = isNaN(v) ? 1 : v;
+    updateSerialDisplay();
+    syncGenderToggle();
+    startCamera(state.facing).then(function(){
+      screenSetup.classList.remove('active');
+      screenCamera.classList.add('active');
+      logPanel.style.display = 'block';
+      startDetectLoop();
+    }).catch(function(err){
+      alert('無法啟動相機：' + err.message + '\n請確認已允許相機權限，並使用 https 連結開啟本工具。');
+    });
+  });
+
+  // ---------- 拍照畫面互動 ----------
+  function updateSerialDisplay(){
+    displaySerial.textContent = String(state.serial).padStart(3,'0');
+  }
+  document.getElementById('btnSerialPlus').addEventListener('click', function(){
+    state.serial++; updateSerialDisplay();
+  });
+  document.getElementById('btnSerialMinus').addEventListener('click', function(){
+    state.serial = Math.max(1, state.serial - 1); updateSerialDisplay();
+  });
+  displaySerial.addEventListener('click', function(){
+    var v = prompt('輸入流水號', state.serial);
+    if(v !== null && !isNaN(parseInt(v,10))){
+      state.serial = parseInt(v,10);
+      updateSerialDisplay();
+    }
+  });
+
+  function syncGenderToggle(){
+    document.querySelectorAll('#genderToggleCamera button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.gender === state.gender);
+    });
+  }
+  document.getElementById('genderToggleCamera').addEventListener('click', function(e){
+    var btn = e.target.closest('button');
+    if(!btn) return;
+    state.gender = btn.dataset.gender;
+    syncGenderToggle();
+  });
+
+  document.getElementById('btnSwitchCam').addEventListener('click', function(){
+    state.facing = (state.facing === 'environment') ? 'user' : 'environment';
+    startCamera(state.facing).catch(function(err){
+      alert('切換鏡頭失敗：' + err.message);
+    });
+  });
+
+  document.getElementById('btnEndSession').addEventListener('click', function(){
+    stopDetectLoop();
+    stopCamera();
+    screenCamera.classList.remove('active');
+    screenSetup.classList.add('active');
+  });
+
+  // ---------- 即時眼部偵測輔助對位（戴口罩亦可，只需眼睛露出） ----------
+  var detectLoopRunning = false;
+  var detectRafId = null;
+  var lastDetectVideoTime = -1;
+  var detectStatusEl = document.getElementById('detectStatus');
+
+  function mapVideoPointToPercent(fx, fy){
+    var vw = video.videoWidth, vh = video.videoHeight;
+    var rect = video.getBoundingClientRect();
+    var cw = rect.width, ch = rect.height;
+    if(!vw || !vh || !cw || !ch) return null;
+    var scale = Math.max(cw / vw, ch / vh);
+    var dispW = vw * scale, dispH = vh * scale;
+    var offsetX = (cw - dispW) / 2, offsetY = (ch - dispH) / 2;
+    var px = fx * dispW + offsetX;
+    var py = fy * dispH + offsetY;
+    return { xPct: (px / cw) * 100, yPct: (py / ch) * 100 };
+  }
+
+  // 反向換算：畫面百分比座標 -> 原始相機像素座標（用於特寫裁切）
+  function percentToVideoPixel(xPct, yPct){
+    var vw = video.videoWidth, vh = video.videoHeight;
+    var rect = video.getBoundingClientRect();
+    var cw = rect.width, ch = rect.height;
+    if(!vw || !vh || !cw || !ch) return null;
+    var scale = Math.max(cw / vw, ch / vh);
+    var offsetX = (cw - vw * scale) / 2;
+    var offsetY = (ch - vh * scale) / 2;
+    var px = (xPct / 100) * cw;
+    var py = (yPct / 100) * ch;
+    return { x: (px - offsetX) / scale, y: (py - offsetY) / scale };
+  }
+
+  function setGuideState(el, cls){
+    if(!el) return;
+    el.classList.remove('ok','bad');
+    if(cls) el.classList.add(cls);
+  }
+
+  function startDetectLoop(){
+    if(detectLoopRunning) return;
+    detectLoopRunning = true;
+    detectRafId = requestAnimationFrame(detectTick);
+  }
+  function stopDetectLoop(){
+    detectLoopRunning = false;
+    if(detectRafId) cancelAnimationFrame(detectRafId);
+    detectRafId = null;
+    setGuideState(gPupilL, null);
+    setGuideState(gPupilR, null);
+    setGuideState(gZoom, null);
+  }
+  function detectTick(){
+    if(!detectLoopRunning) return;
+    try{ runDetectionFrame(); }catch(e){ /* 偵測失敗不影響拍照功能 */ }
+    detectRafId = requestAnimationFrame(detectTick);
+  }
+
+  function runDetectionFrame(){
+    if(!detectStatusEl) return;
+    var detector = window.__eyeDetector;
+    if(!detector){
+      detectStatusEl.textContent = '偵測模型載入中…（即使沒載入，仍可用手動對位圈拍照）';
+      detectStatusEl.className = 'detect-status neutral';
+      return;
+    }
+    if(detector.isFailed()){
+      detectStatusEl.textContent = '即時眼部偵測未啟用（無網路或載入失敗），請用手動對位圈拍照';
+      detectStatusEl.className = 'detect-status neutral';
+      return;
+    }
+    if(!detector.isReady()){
+      detectStatusEl.textContent = '偵測模型載入中…（即使沒載入，仍可用手動對位圈拍照）';
+      detectStatusEl.className = 'detect-status neutral';
+      return;
+    }
+    if(video.currentTime === lastDetectVideoTime) return; // 同一幀不重複偵測
+    lastDetectVideoTime = video.currentTime;
+
+    var det = detector.detect(video, performance.now());
+    var currentStep = state.steps[state.stepIndex];
+    var guideType = currentStep ? currentStep.guide : 'face';
+
+    if(!det){
+      detectStatusEl.textContent = '⚠️ 未偵測到眼睛，請確認雙眼露出並正對鏡頭（口罩不影響，只需眼睛露出）';
+      detectStatusEl.className = 'detect-status bad';
+      setGuideState(gPupilL, null); setGuideState(gPupilR, null); setGuideState(gZoom, null);
+      return;
+    }
+
+    var L = mapVideoPointToPercent(det.imgLeft.x, det.imgLeft.y);
+    var R = mapVideoPointToPercent(det.imgRight.x, det.imgRight.y);
+    if(!L || !R) return;
+
+    if(guideType === 'face'){
+      var targetL = {x:36, y:43}, targetR = {x:64, y:43};
+      var distL = Math.hypot(L.xPct-targetL.x, L.yPct-targetL.y);
+      var distR = Math.hypot(R.xPct-targetR.x, R.yPct-targetR.y);
+      var targetGap = targetR.x - targetL.x; // 28
+      var actualGap = Math.abs(R.xPct - L.xPct);
+      var gapRatio = actualGap / targetGap;
+      var posOk = (distL < 7 && distR < 7);
+      var okAll = posOk && gapRatio > 0.82 && gapRatio < 1.22;
+      setGuideState(gPupilL, okAll ? 'ok' : 'bad');
+      setGuideState(gPupilR, okAll ? 'ok' : 'bad');
+      if(okAll){
+        detectStatusEl.textContent = '✅ 雙眼已對準，可以拍照';
+        detectStatusEl.className = 'detect-status ok';
+      } else if(gapRatio <= 0.82){
+        detectStatusEl.textContent = '請靠近一點';
+        detectStatusEl.className = 'detect-status bad';
+      } else if(gapRatio >= 1.22){
+        detectStatusEl.textContent = '請拉遠一點';
+        detectStatusEl.className = 'detect-status bad';
+      } else {
+        var dx = ((L.xPct-targetL.x)+(R.xPct-targetR.x))/2;
+        var dy = ((L.yPct-targetL.y)+(R.yPct-targetR.y))/2;
+        var hint = Math.abs(dx) > Math.abs(dy) ? (dx>0 ? '請將鏡頭往左移' : '請將鏡頭往右移') : (dy>0 ? '請將鏡頭往上移' : '請將鏡頭往下移');
+        detectStatusEl.textContent = hint;
+        detectStatusEl.className = 'detect-status bad';
+      }
+    } else if(guideType === 'leftEye' || guideType === 'rightEye'){
+      // leftEye步驟＝受檢者左眼＝畫面右側；rightEye步驟＝受檢者右眼＝畫面左側
+      var single = (guideType === 'leftEye') ? R : L;
+      var targetX = (guideType === 'leftEye') ? 64 : 36;
+      var dist = Math.hypot(single.xPct-targetX, single.yPct-46);
+      var ok = dist < 10;
+      setGuideState(gZoom, ok ? 'ok' : 'bad');
+      detectStatusEl.textContent = ok ? '✅ 已對準，可以拍照' : (single.xPct > targetX ? '請將鏡頭往右移靠近' : '請將鏡頭往左移靠近');
+      detectStatusEl.className = ok ? 'detect-status ok' : 'detect-status bad';
+    }
+  }
+
+  btnRetake.addEventListener('click', function(){
+    clearShotsUI();
+    state.capturedShots = [];
+    resetStepUI();
+  });
+
+  btnCapture.addEventListener('click', function(){
+    if(!state.capturing){
+      beginSequence();
+      return;
+    }
+    var step = state.steps[state.stepIndex];
+    captureFrame(step);
+    countdownNum.textContent = '📸';
+    setTimeout(function(){ countdownNum.textContent = ''; }, 300);
+    state.stepIndex++;
+    if(state.stepIndex >= state.steps.length){
+      finishPatient();
+    } else {
+      showStep();
+    }
+  });
+
+  // ---------- 相機控制 ----------
+  function startCamera(facing){
+    stopCamera();
+    var constraints = {
+      audio:false,
+      video:{
+        facingMode: {ideal: facing},
+        width: {ideal:2560},
+        height:{ideal:1920}
+      }
+    };
+    return navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+      state.stream = stream;
+      video.srcObject = stream;
+      return video.play();
+    });
+  }
+  function stopCamera(){
+    if(state.stream){
+      state.stream.getTracks().forEach(function(t){ t.stop(); });
+      state.stream = null;
+    }
+  }
+
+  // ---------- 引導圖樣切換 ----------
+  function setGuide(type){
+    if(type === 'face'){
+      gFace.style.display = '';
+      gBrow.style.display = '';
+      gPupilL.style.display = '';
+      gPupilR.style.display = '';
+      gChin.style.display = '';
+      gZoom.style.display = 'none';
+      gZoomLabel.style.display = 'none';
+    } else if(type === 'leftEye' || type === 'rightEye'){
+      gFace.style.display = 'none';
+      gBrow.style.display = 'none';
+      gPupilL.style.display = 'none';
+      gPupilR.style.display = 'none';
+      gChin.style.display = 'none';
+      gZoom.style.display = '';
+      gZoomLabel.style.display = '';
+      // 左眼(受檢者左眼)實際會出現在畫面右側；右眼出現在畫面左側
+      if(type === 'leftEye'){
+        gZoom.setAttribute('cx', 64); gZoomLabel.setAttribute('x', 64);
+        gZoomLabel.textContent = 'L';
+      } else {
+        gZoom.setAttribute('cx', 36); gZoomLabel.setAttribute('x', 36);
+        gZoomLabel.textContent = 'R';
+      }
+    }
+  }
+
+  // ---------- 拍攝流程 ----------
+  function beginSequence(){
+    state.capturing = true;
+    state.steps = buildSteps();
+    state.stepIndex = 0;
+    state.capturedShots = [];
+    clearShotsUI();
+    btnRetake.style.display = 'none';
+    state.patientStartTime = performance.now();
+    tickTimer();
+    showStep();
+  }
+
+  function showStep(){
+    var step = state.steps[state.stepIndex];
+    setGuide(step.guide);
+    stepCaption.textContent = '(' + (state.stepIndex + 1) + '/' + state.steps.length + ') ' + step.label;
+    btnCapture.textContent = '📸 拍下這張';
+  }
+
+  var timerInterval = null;
+  function tickTimer(){
+    if(timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(function(){
+      var s = (performance.now() - state.patientStartTime) / 1000;
+      infoTimer.textContent = s.toFixed(1) + 's';
+    }, 100);
+  }
+  function stopTimerDisplay(){
+    if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function captureFrame(step){
+    var vw = video.videoWidth || 1280;
+    var vh = video.videoHeight || 960;
+    var sx = 0, sy = 0, sw = vw, sh = vh;
+
+    // 左右眼特寫步驟：依對位圈範圍，從原始高解析畫面裁切出真正的局部放大特寫
+    // （而非整張臉的縮圖），裁切範圍以對位圈為中心並外擴留一些邊界
+    if(step.guide === 'leftEye' || step.guide === 'rightEye'){
+      var cx = parseFloat(gZoom.getAttribute('cx'));
+      var cy = parseFloat(gZoom.getAttribute('cy'));
+      var rx = parseFloat(gZoom.getAttribute('rx'));
+      var ry = parseFloat(gZoom.getAttribute('ry'));
+      var pad = 1.3;
+      var p1 = percentToVideoPixel(cx - rx * pad, cy - ry * pad);
+      var p2 = percentToVideoPixel(cx + rx * pad, cy + ry * pad);
+      if(p1 && p2){
+        var x0 = Math.max(0, Math.min(p1.x, p2.x));
+        var y0 = Math.max(0, Math.min(p1.y, p2.y));
+        var cropW = Math.min(vw - x0, Math.abs(p2.x - p1.x));
+        var cropH = Math.min(vh - y0, Math.abs(p2.y - p1.y));
+        if(cropW > 10 && cropH > 10){
+          sx = x0; sy = y0; sw = cropW; sh = cropH;
+        }
+      }
+    }
+
+    hiddenCanvas.width = sw;
+    hiddenCanvas.height = sh;
+    var ctx = hiddenCanvas.getContext('2d');
+    // 注意：不做水平鏡像，確保儲存影像為真實方位（左右眼標記才正確）
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
+    var dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.92);
+    var shot = {key: step.key, label: step.label, dataUrl: dataUrl};
+    state.capturedShots.push(shot);
+    var img = document.createElement('img');
+    img.src = dataUrl;
+    thumbRow.appendChild(img);
+  }
+
+  function clearShotsUI(){
+    thumbRow.innerHTML = '';
+    countdownNum.textContent = '';
+    stepCaption.textContent = '距離約30–40公分，將雙眼對齊綠色圓圈，按「開始拍照」';
+    btnCapture.textContent = '開始拍照';
+    setGuide('face');
+  }
+
+  function resetStepUI(){
+    state.capturing = false;
+    btnCapture.disabled = false;
+    stopTimerDisplay();
+  }
+
+  function pad(n, len){
+    n = String(n);
+    while(n.length < len) n = '0' + n;
+    return n;
+  }
+  function dateStr(){
+    var d = new Date();
+    return '' + d.getFullYear() + pad(d.getMonth()+1,2) + pad(d.getDate(),2);
+  }
+
+  function finishPatient(){
+    stopTimerDisplay();
+    var elapsed = (performance.now() - state.patientStartTime) / 1000;
+    var ds = dateStr();
+    var serialPadded = pad(state.serial, 3);
+    var genderCode = state.gender;
+    var shotsForLog = [];
+
+    var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent);
+    state.capturedShots.forEach(function(shot, idx){
+      var filename = ds + '_' + serialPadded + '_' + genderCode + '_' + shot.key + '.jpg';
+      if(!isIOS){
+        // iPhone Safari不支援 download 屬性自動存檔，會改以「打包照片ZIP」匯出，避免逐張跳出畫面打斷拍攝流程
+        setTimeout(function(){
+          downloadDataUrl(shot.dataUrl, filename);
+        }, idx * 350);
+      }
+      shotsForLog.push({key: shot.key, filename: filename, dataUrl: shot.dataUrl});
+    });
+
+    state.sessionLog.push({
+      serial: state.serial,
+      gender: genderCode,
+      time: new Date().toLocaleTimeString('zh-TW'),
+      elapsed: elapsed.toFixed(1),
+      count: state.capturedShots.length,
+      shots: shotsForLog
+    });
+    renderLogRow(state.sessionLog[state.sessionLog.length - 1]);
+
+    // 自動進入下一位
+    state.serial++;
+    updateSerialDisplay();
+    setTimeout(function(){
+      clearShotsUI();
+      resetStepUI();
+    }, 600);
+  }
+
+  function downloadDataUrl(dataUrl, filename){
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function renderLogRow(entry){
+    var tr = document.createElement('tr');
+    var thumbHtml = entry.shots.map(function(s){
+      return '<img src="' + s.dataUrl + '" title="' + s.filename + '">';
+    }).join(' ');
+    tr.innerHTML =
+      '<td>' + pad(entry.serial,3) + '</td>' +
+      '<td>' + (entry.gender === 'M' ? '男' : '女') + '</td>' +
+      '<td>' + entry.time + '</td>' +
+      '<td>' + entry.elapsed + '</td>' +
+      '<td><span class="badge ok">' + entry.count + '</span></td>' +
+      '<td>' + thumbHtml + '</td>';
+    logBody.appendChild(tr);
+  }
+
+  // ---------- 匯出 ----------
+  document.getElementById('btnExportCsv').addEventListener('click', function(){
+    var rows = [['流水號','性別','時間','耗時(秒)','張數']];
+    state.sessionLog.forEach(function(e){
+      rows.push([pad(e.serial,3), e.gender === 'M' ? '男':'女', e.time, e.elapsed, e.count]);
+    });
+    var csv = rows.map(function(r){ return r.join(','); }).join('\n');
+    var blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = '篩檢紀錄_' + dateStr() + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('btnExportZip').addEventListener('click', function(){
+    if(typeof JSZip === 'undefined'){
+      alert('ZIP 功能需要網路連線載入套件，請確認網路後重試。');
+      return;
+    }
+    var zip = new JSZip();
+    state.sessionLog.forEach(function(entry){
+      entry.shots.forEach(function(s){
+        var base64 = s.dataUrl.split(',')[1];
+        zip.file(s.filename, base64, {base64:true});
+      });
+    });
+    zip.generateAsync({type:'blob'}).then(function(content){
+      var url = URL.createObjectURL(content);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = '篩檢照片_' + dateStr() + '.zip';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  });
+
+  // init
+  updateSerialDisplay();
+  setGuide('face');
+})();
+</script>
+</body>
+</html>
